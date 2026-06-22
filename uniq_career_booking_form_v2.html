@@ -1,0 +1,337 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.page { padding: 1.25rem 1rem 2rem; max-width: 420px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; }
+.brand-logo { width: 36px; height: 36px; background: #1B2B5E; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.brand-logo span { color: #F4A61F; font-weight: 500; font-size: 13px; letter-spacing: 0.5px; }
+.brand-text { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.brand-sub { font-size: 12px; color: var(--color-text-secondary); }
+.hero { background: #1B2B5E; border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+.hero h1 { color: #F4A61F; font-size: 18px; font-weight: 500; margin-bottom: 4px; }
+.hero p { color: rgba(255,255,255,0.75); font-size: 13px; line-height: 1.5; }
+.hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.badge { background: rgba(244,166,31,0.18); color: #F4A61F; font-size: 11px; padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+.step { margin-bottom: 1.5rem; }
+.step-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.step-label i { font-size: 14px; color: #F4A61F; }
+.session-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.session-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px; cursor: pointer; background: var(--color-background-primary); }
+.session-card.selected { border: 2px solid #1B2B5E; background: rgba(27,43,94,0.04); }
+.session-card .s-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.session-card .s-dur { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; }
+.session-card .s-price { font-size: 16px; font-weight: 500; color: #1B2B5E; }
+.session-card .s-price span { font-size: 11px; color: var(--color-text-secondary); font-weight: 400; }
+.session-card.selected .s-price { color: #F4A61F; }
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-month { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.cal-nav { background: none; border: 0.5px solid var(--color-border-tertiary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: var(--color-text-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day-name { font-size: 10px; color: var(--color-text-tertiary); text-align: center; padding: 4px 0; font-weight: 500; }
+.cal-day { font-size: 12px; text-align: center; padding: 6px 2px; border-radius: 6px; cursor: pointer; color: var(--color-text-secondary); }
+.cal-day.available { color: var(--color-text-primary); }
+.cal-day.available:hover { background: var(--color-background-secondary); }
+.cal-day.selected { background: #1B2B5E; color: white; font-weight: 500; }
+.cal-day.today { font-weight: 500; color: #F4A61F; }
+.cal-day.past, .cal-day.empty { color: var(--color-text-tertiary); cursor: default; pointer-events: none; }
+.slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.slot { border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; padding: 5px 12px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; background: var(--color-background-primary); }
+.slot:hover { border-color: #1B2B5E; color: var(--color-text-primary); }
+.slot.selected { background: #F4A61F; border-color: #F4A61F; color: #1B2B5E; font-weight: 500; }
+.slot.taken { opacity: 0.4; cursor: default; pointer-events: none; text-decoration: line-through; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.form-group { margin-bottom: 10px; }
+.form-group label { font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; }
+.form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 6px; font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); outline: none; }
+.form-group input:focus, .form-group select:focus { border-color: #1B2B5E; box-shadow: 0 0 0 2px rgba(27,43,94,0.1); }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.25rem 0; }
+.summary-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1rem; }
+.summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+.summary-row .label { color: var(--color-text-secondary); }
+.summary-row .val { color: var(--color-text-primary); font-weight: 500; }
+.summary-row.total { margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--color-border-tertiary); }
+.summary-row.total .val { color: #1B2B5E; font-size: 15px; }
+.upi-section { margin-bottom: 1rem; }
+.upi-title { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.upi-apps { display: flex; gap: 8px; flex-wrap: wrap; }
+.upi-app { border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--color-text-primary); cursor: pointer; background: var(--color-background-primary); display: flex; align-items: center; gap: 5px; }
+.upi-app.sel { border: 2px solid #1B2B5E; }
+.upi-id-box { margin-top: 10px; display: flex; align-items: center; gap: 10px; background: var(--color-background-secondary); border-radius: 8px; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); }
+.upi-id-box .upi-details span { font-size: 13px; color: var(--color-text-primary); font-weight: 500; display: block; }
+.upi-id-box .upi-details small { font-size: 11px; color: var(--color-text-secondary); }
+.btn-book { width: 100%; background: #1B2B5E; color: white; border: none; border-radius: var(--border-radius-md); padding: 14px; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-book:hover { background: #243870; }
+.btn-book:active { transform: scale(0.99); }
+.btn-book i { font-size: 18px; }
+.note { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.5; margin-top: 10px; }
+.confirm-view { display: none; text-align: center; padding: 2rem 1rem; }
+.confirm-icon { width: 64px; height: 64px; background: rgba(27,43,94,0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+.confirm-icon i { font-size: 28px; color: #1B2B5E; }
+.confirm-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.confirm-sub { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
+.confirm-detail { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; margin: 1.25rem 0; text-align: left; }
+.whatsapp-btn { width: 100%; background: #25D366; color: white; border: none; border-radius: var(--border-radius-md); padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+</style>
+
+<div class="page" id="bookingPage">
+  <h2 class="sr-only">Book a one-on-one career counselling session with Raaj</h2>
+  <div class="brand">
+    <div class="brand-logo"><span>UC</span></div>
+    <div>
+      <div class="brand-text">Uniq Career</div>
+      <div class="brand-sub">@careerwithraaj</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Book 1-on-1 with Raaj</h1>
+    <p>Career clarity session — college to career, course selection, abroad studies & more.</p>
+    <div class="hero-badges">
+      <span class="badge"><i class="ti ti-video" aria-hidden="true"></i> Google Meet / Zoom</span>
+      <span class="badge"><i class="ti ti-shield-check" aria-hidden="true"></i> 15+ yrs experience</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-label"><i class="ti ti-sparkles" aria-hidden="true"></i> Choose session</div>
+    <div class="session-grid">
+      <div class="session-card selected" onclick="selectSession(this,'30min',499,'Quick Clarity','30 min')">
+        <div class="s-title">Quick Clarity</div>
+        <div class="s-dur">30 minutes</div>
+        <div class="s-price">₹499 <span>/ session</span></div>
+      </div>
+      <div class="session-card" onclick="selectSession(this,'60min',999,'Deep Dive','60 min')">
+        <div class="s-title">Deep Dive</div>
+        <div class="s-dur">60 minutes</div>
+        <div class="s-price">₹999 <span>/ session</span></div>
+      </div>
+      <div class="session-card" onclick="selectSession(this,'psycho',1499,'Psychometric + Guidance','90 min')">
+        <div class="s-title">Psychometric + Guidance</div>
+        <div class="s-dur">90 minutes</div>
+        <div class="s-price">₹1,499 <span>/ session</span></div>
+      </div>
+      <div class="session-card" onclick="selectSession(this,'abroad',1999,'Abroad Study Plan','60 min')">
+        <div class="s-title">Abroad Study Plan</div>
+        <div class="s-dur">60 minutes</div>
+        <div class="s-price">₹1,999 <span>/ session</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-label"><i class="ti ti-calendar" aria-hidden="true"></i> Pick a date</div>
+    <div class="cal-header">
+      <button class="cal-nav" onclick="changeMonth(-1)" aria-label="Previous month"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+      <span class="cal-month" id="calMonth"></span>
+      <button class="cal-nav" onclick="changeMonth(1)" aria-label="Next month"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="slots" id="timeSlots" style="display:none;"></div>
+  </div>
+
+  <div class="step">
+    <div class="step-label"><i class="ti ti-user" aria-hidden="true"></i> Your details</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fname">Name</label>
+        <input type="text" id="fname" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label for="fclass">Stream</label>
+        <select id="fclass">
+          <option value="">Select stream</option>
+          <option>B.Com</option>
+          <option>BBA</option>
+          <option>B.Sc</option>
+          <option>Arts / Humanities</option>
+          <option>Engineering</option>
+          <option>12th student</option>
+          <option>10th student</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fphone">WhatsApp number</label>
+        <input type="tel" id="fphone" placeholder="9XXXXXXXXX">
+      </div>
+      <div class="form-group">
+        <label for="femail">Email (optional)</label>
+        <input type="email" id="femail" placeholder="you@email.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="ftopic">What do you want to discuss?</label>
+      <input type="text" id="ftopic" placeholder="e.g. MBA after B.Com, Salesforce career...">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div id="summarySection" style="display:none;">
+    <div class="summary-card">
+      <div class="summary-row"><span class="label">Session</span><span class="val" id="sumSession">—</span></div>
+      <div class="summary-row"><span class="label">Date & time</span><span class="val" id="sumDateTime">—</span></div>
+      <div class="summary-row total"><span class="label">Total</span><span class="val" id="sumPrice">—</span></div>
+    </div>
+
+    <div class="upi-section">
+      <div class="upi-title"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px;color:#1B2B5E;"></i> Pay via UPI</div>
+      <div class="upi-apps">
+        <div class="upi-app sel" onclick="selectUpi(this)"><i class="ti ti-device-mobile" aria-hidden="true"></i> GPay</div>
+        <div class="upi-app" onclick="selectUpi(this)"><i class="ti ti-device-mobile" aria-hidden="true"></i> PhonePe</div>
+        <div class="upi-app" onclick="selectUpi(this)"><i class="ti ti-device-mobile" aria-hidden="true"></i> Paytm</div>
+        <div class="upi-app" onclick="selectUpi(this)"><i class="ti ti-scan" aria-hidden="true"></i> Any UPI</div>
+      </div>
+      <div class="upi-id-box">
+        <i class="ti ti-at" aria-hidden="true" style="font-size:22px;color:#1B2B5E;flex-shrink:0;"></i>
+        <div class="upi-details">
+          <span>raja.passion2010@okhdfcbank</span>
+          <small>Pay first, then click confirm below</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-book" onclick="handleBook()" id="bookBtn">
+    <i class="ti ti-calendar-event" aria-hidden="true"></i>
+    Check availability & pay
+  </button>
+  <p class="note" id="validationMsg"></p>
+</div>
+
+<div class="confirm-view" id="confirmPage">
+  <div class="confirm-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></div>
+  <div class="confirm-title">Booking requested!</div>
+  <div class="confirm-sub">Raaj will confirm your slot on WhatsApp within 30 minutes.</div>
+  <div class="confirm-detail" id="confirmDetail"></div>
+  <button class="whatsapp-btn" id="waBtn">
+    <i class="ti ti-brand-whatsapp" aria-hidden="true"></i>
+    Confirm on WhatsApp
+  </button>
+  <p class="note">Send your payment screenshot on WhatsApp to lock in your slot.</p>
+</div>
+
+<script>
+let selSession = { id:'30min', price:499, label:'Quick Clarity', dur:'30 min' };
+let selDate = null, selSlot = null;
+let curYear = 2026, curMonth = 6;
+
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+const slotsByDow = {
+  1: ['10:00 AM','11:00 AM','2:00 PM','4:00 PM'],
+  2: ['10:00 AM','11:30 AM','3:00 PM'],
+  3: ['9:00 AM','11:00 AM','2:00 PM','5:00 PM'],
+  4: ['10:00 AM','12:00 PM','3:30 PM'],
+  5: ['9:30 AM','11:00 AM','2:00 PM','4:30 PM'],
+  6: ['10:00 AM','12:00 PM']
+};
+const takenSlots = { '2026-6-5':['11:00 AM'], '2026-6-7':['2:00 PM'] };
+
+function buildCal() {
+  document.getElementById('calMonth').textContent = months[curMonth] + ' ' + curYear;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  dayNames.forEach(d => { const el=document.createElement('div'); el.className='cal-day-name'; el.textContent=d; grid.appendChild(el); });
+  const first = new Date(curYear, curMonth, 1).getDay();
+  const daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
+  const today = new Date();
+  for (let i=0; i<first; i++) { const el=document.createElement('div'); el.className='cal-day empty'; grid.appendChild(el); }
+  for (let d=1; d<=daysInMonth; d++) {
+    const el = document.createElement('div');
+    const date = new Date(curYear, curMonth, d);
+    const dow = date.getDay();
+    const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const key = curYear+'-'+curMonth+'-'+d;
+    if (isPast || dow===0) { el.className='cal-day past'; }
+    else {
+      const isToday = date.toDateString()===today.toDateString();
+      el.className='cal-day available'+(isToday?' today':'')+(selDate===key?' selected':'');
+      el.onclick = () => pickDate(d, el, dow);
+    }
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+}
+
+function pickDate(d, el, dow) {
+  selDate = curYear+'-'+curMonth+'-'+d;
+  selSlot = null;
+  document.querySelectorAll('.cal-day.selected').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  renderSlots(dow);
+  updateSummary();
+}
+
+function renderSlots(dow) {
+  const box = document.getElementById('timeSlots');
+  const available = slotsByDow[dow] || ['11:00 AM','2:00 PM','4:00 PM'];
+  const taken = takenSlots[selDate] || [];
+  box.style.display='flex';
+  box.innerHTML='';
+  available.forEach(s => {
+    const el=document.createElement('div');
+    el.className='slot'+(taken.includes(s)?' taken':'');
+    el.textContent=s;
+    el.onclick=()=>{ selSlot=s; document.querySelectorAll('.slot.selected').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); updateSummary(); };
+    box.appendChild(el);
+  });
+}
+
+function changeMonth(dir) {
+  curMonth+=dir;
+  if(curMonth>11){curMonth=0;curYear++;}
+  if(curMonth<0){curMonth=11;curYear--;}
+  buildCal();
+}
+
+function selectSession(el, id, price, label, dur) {
+  document.querySelectorAll('.session-card').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  selSession={id,price,label,dur};
+  updateSummary();
+}
+
+function selectUpi(el) {
+  document.querySelectorAll('.upi-app').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function updateSummary() {
+  const sec = document.getElementById('summarySection');
+  if (!selDate||!selSlot) { sec.style.display='none'; document.getElementById('bookBtn').innerHTML='<i class="ti ti-calendar-event" aria-hidden="true"></i> Check availability & pay'; return; }
+  sec.style.display='block';
+  const [y,m,d] = selDate.split('-');
+  const dateStr = d+' '+months[parseInt(m)]+' '+y;
+  document.getElementById('sumSession').textContent = selSession.label+' ('+selSession.dur+')';
+  document.getElementById('sumDateTime').textContent = dateStr+' · '+selSlot;
+  document.getElementById('sumPrice').textContent = '₹'+selSession.price.toLocaleString('en-IN');
+  document.getElementById('bookBtn').innerHTML = '<i class="ti ti-lock" aria-hidden="true"></i> Confirm & Pay ₹'+selSession.price.toLocaleString('en-IN');
+}
+
+function handleBook() {
+  const name = document.getElementById('fname').value.trim();
+  const phone = document.getElementById('fphone').value.trim();
+  const msg = document.getElementById('validationMsg');
+  if (!name) { msg.textContent='Please enter your name.'; return; }
+  if (!phone||phone.length<10) { msg.textContent='Enter a valid WhatsApp number.'; return; }
+  if (!selDate||!selSlot) { msg.textContent='Please pick a date and time slot.'; return; }
+  msg.textContent='';
+  const [y,m,d] = selDate.split('-');
+  const dateStr = d+' '+months[parseInt(m)]+' '+y;
+  document.getElementById('confirmDetail').innerHTML =
+    '<div style="font-size:13px;display:flex;flex-direction:column;gap:6px;">'+
+    '<div style="display:flex;justify-content:space-between;"><span style="color:var(--color-text-secondary)">Name</span><span style="font-weight:500">'+name+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;"><span style="color:var(--color-text-secondary)">Session</span><span style="font-weight:500">'+selSession.label+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;"><span style="color:var(--color-text-secondary)">Date & time</span><span style="font-weight:500">'+dateStr+' · '+selSlot+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;border-top:0.5px solid var(--color-border-tertiary);padding-top:6px;margin-top:2px;"><span style="color:var(--color-text-secondary)">Amount</span><span style="font-weight:500;color:#1B2B5E">₹'+selSession.price.toLocaleString('en-IN')+'</span></div></div>';
+  const wa = 'Hi Raaj! I booked a '+selSession.label+' on '+dateStr+' at '+selSlot+'. My name is '+name+' ('+phone+'). Payment done to raja.passion2010@okhdfcbank — sending screenshot now.';
+  document.getElementById('waBtn').onclick = () => { window.open('https://wa.me/919841140844?text='+encodeURIComponent(wa)); };
+  document.getElementById('bookingPage').style.display='none';
+  document.getElementById('confirmPage').style.display='block';
+}
+
+buildCal();
+</script>
